@@ -1,0 +1,6 @@
+@OmniMart_HostAddress = http://localhost:5199
+
+GET {{OmniMart_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

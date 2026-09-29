@@ -1,0 +1,132 @@
+﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OmniMart.Application.Common;
+using OmniMart.Application.Features.Customers.Commands;
+using OmniMart.Application.Interfaces;
+using OmniMart.Application.Interfaces.Repositories;
+using OmniMart.Application.Interfaces.Security;
+using OmniMart.Domain.Entities;
+using System;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace OmniMart.Tests.Application.Features.Customers.Commands;
+
+public class RedeemLoyaltyPointsCommandHandlerTests
+{
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ICustomerProfileRepository> _profileRepoMock = new();
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock = new();
+    private readonly Mock<ILogger<RedeemLoyaltyPointsCommandHandler>> _loggerMock = new();
+
+    private readonly RedeemLoyaltyPointsCommandHandler _handler;
+    private readonly Guid _defaultUserId = Guid.NewGuid();
+    public RedeemLoyaltyPointsCommandHandlerTests()
+    {
+        _unitOfWorkMock.Setup(u => u.CustomerProfiles).Returns(_profileRepoMock.Object);
+        _handler = new RedeemLoyaltyPointsCommandHandler(
+            _unitOfWorkMock.Object,
+            _currentUserServiceMock.Object,
+            _loggerMock.Object);
+    }
+
+    #region Helper Methods
+
+    private void SetupCurrentUser()
+    {
+        _currentUserServiceMock.Setup(s => s.UserId).Returns(_defaultUserId.ToString());
+    }
+
+    private CustomerProfile SetupProfileInDb(Guid userId)
+    {
+        var profile = new CustomerProfile(userId);
+
+        _profileRepoMock.Setup(r => r.GetAsync(
+            It.IsAny<Expression<Func<CustomerProfile, bool>>>(),
+            It.IsAny<CancellationToken>(),
+            It.IsAny<Expression<Func<CustomerProfile, object>>[]>()
+        )).ReturnsAsync(profile);
+
+        return profile;
+    }
+
+    #endregion
+
+    #region Tests
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("invalid-guid-format")]
+    public async Task Handle_ShouldReturnFailure_WhenUserIsUnauthorizedOrInvalidId(string? invalidUserId)
+    {
+        SetupCurrentUser();
+        _currentUserServiceMock.Setup(s => s.UserId).Returns(invalidUserId);
+
+        var command = new RedeemLoyaltyPointsCommand(50);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorType.Should().Be(ErrorType.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenCustomerProfileNotFound()
+    {
+        SetupCurrentUser();
+
+        _profileRepoMock.Setup(r => r.GetAsync(
+            It.IsAny<Expression<Func<CustomerProfile, bool>>>(),
+            It.IsAny<CancellationToken>(),
+            It.IsAny<Expression<Func<CustomerProfile, object>>[]>()
+        )).ReturnsAsync((CustomerProfile?)null);
+
+        var command = new RedeemLoyaltyPointsCommand(50);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorType.Should().Be(ErrorType.NotFound);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnFailure_WhenDomainThrowsInvalidOperationException()
+    {
+        SetupCurrentUser();
+        var profile = SetupProfileInDb(_defaultUserId);
+
+        var command = new RedeemLoyaltyPointsCommand(100);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorType.Should().Be(ErrorType.Conflict);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnSuccess_WhenPointsAreRedeemedSuccessfully()
+    {
+        SetupCurrentUser();
+        var profile = SetupProfileInDb(_defaultUserId);
+
+        profile.RecordPurchase(2000m);
+
+        var command = new RedeemLoyaltyPointsCommand(50);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+
+        profile.LoyaltyPoints.Should().Be(150);
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+}

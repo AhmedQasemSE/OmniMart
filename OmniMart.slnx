@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="OmniMart.Application/OmniMart.Application.csproj" Id="693165bf-35f2-4679-b73f-e1cb3d5e72d3" />
+  <Project Path="OmniMart.Domain/OmniMart.Domain.csproj" Id="c359d7af-6daf-4518-aaeb-56c4dbf62c40" />
+  <Project Path="OmniMart.Infrastructure/OmniMart.Infrastructure.csproj" Id="473b4607-c30d-4b81-a328-f8921556e54a" />
+  <Project Path="OmniMart.Tests/OmniMart.Tests.csproj" Id="150c5c5b-fc0b-4ee1-bcfe-2de14a7a8277" />
+  <Project Path="OmniMart/OmniMart.csproj" />
+</Solution>
