@@ -42,6 +42,8 @@ public class StaffProfileBuilder
             SetPrivateProperty(profile, "User", _customUser);
         }
 
+        SetPrivateProperty(profile, "RowVersion", Array.Empty<byte>());
+        
         return profile;
     }
 

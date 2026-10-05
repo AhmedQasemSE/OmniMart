@@ -92,7 +92,8 @@ public class OrderBuilder
         if (_forcedTotalAmount.HasValue) SetPrivateProperty(order, "TotalAmount", _forcedTotalAmount.Value);
         if (_customerEntity != null) SetPrivateProperty(order, "Customer", _customerEntity);
         if (_vendorProfileEntity != null) SetPrivateProperty(order, "VendorProfile", _vendorProfileEntity);
-
+       
+        SetPrivateProperty(order, "RowVersion", Array.Empty<byte>());
         return order;
     }
 
