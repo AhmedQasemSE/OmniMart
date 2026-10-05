@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using OmniMart.Application.Interfaces.Security;
 using OmniMart.Domain.Entities;
 using OmniMart.Domain.Enums;
@@ -49,7 +50,7 @@ public class DataSeeder
             staffNumber: "STF_ADMIN001",
             departmentRole: Department.IT,
             salary: 0
-        );
+                   );
 
         await _context.Users.AddAsync(adminUser);
         await _context.StaffProfiles.AddAsync(adminProfile);

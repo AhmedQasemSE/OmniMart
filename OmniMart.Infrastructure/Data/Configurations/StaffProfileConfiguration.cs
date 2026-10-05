@@ -21,6 +21,8 @@ namespace OmniMart.Infrastructure.Data.Configurations
            .HasForeignKey<StaffProfile>(u => u.UserId)
            .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(s => s.RowVersion).IsRowVersion();
+
             builder.HasQueryFilter(s => !s.User!.IsDeleted);
         }
 
