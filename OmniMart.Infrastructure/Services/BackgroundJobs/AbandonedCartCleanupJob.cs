@@ -29,6 +29,7 @@ public class AbandonedCartCleanupJob
             .Include(pg => pg.Orders)
                 .ThenInclude(o => o.OrderItems)
                     .ThenInclude(oi => oi.ProductVariant)
+                    .AsSplitQuery()
             .Where(pg => !pg.IsPaid && pg.CreatedAt < expirationTime)
             .ToListAsync();
 
