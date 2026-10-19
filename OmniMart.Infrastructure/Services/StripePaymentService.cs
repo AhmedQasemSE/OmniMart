@@ -22,7 +22,6 @@ public class StripePaymentService : IPaymentService
     {
         var options = new SessionCreateOptions
         {
-            PaymentMethodTypes = new List<string> { "card" },
             CustomerEmail = customerEmail,
 
             // Crucial: Maps the Stripe checkout session to our internal PaymentGroupId for Webhook processing
