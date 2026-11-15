@@ -5,21 +5,20 @@
 ![SQL Server](https://img.shields.io/badge/SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-OmniMart is a highly scalable, multi-tenant e-commerce backend built with the latest **.NET 10** and **C#**. Designed with enterprise-grade standards, it strictly follows **Clean Architecture** and implements **Domain-Driven Design (DDD)**, **CQRS**, and **Event-Driven Architecture**. The system seamlessly handles complex e-commerce workflows, including multi-role authorization, dynamic vendor management, robust order state machines, and secure payment processing.
+OmniMart is a highly scalable, multi-vendor e-commerce backend built with the latest **.NET 10** and **C#**. Designed with enterprise-grade standards, it strictly follows **Clean Architecture** and implements **Domain-Driven Design (DDD)**, **CQRS**, and **Event-Driven Architecture**. The system seamlessly handles complex e-commerce workflows, including multi-role authorization, dynamic vendor management, robust order state machines, and secure payment processing.
 
 ## 🏗️ Architecture & Core Patterns
 *   **Clean Architecture:** Strict separation of concerns across Domain, Application, Infrastructure, and API layers to ensure maintainability and testability.
 *   **Domain-Driven Design (DDD):** Rich domain models with strict encapsulation, value objects (e.g., `Address`), domain events, and invariant enforcement.
 *   **CQRS Pattern:** Segregation of Commands and Queries using **MediatR**. Queries are heavily optimized using `.AsNoTracking()` for high-speed read operations.
-*   **Event-Driven Architecture:** In-process domain events (via custom `SaveChangesInterceptor` and MediatR `INotificationHandler`) decouple core logic from side effects like email notifications, SMS, and webhook triggers.
+*   **Event-Driven Architecture:** In-process domain events (via custom `SaveChangesInterceptor` and MediatR `INotificationHandler`) decouple core logic from side effects like email and SMS notifications.
 *   **Repository & Unit of Work:** Abstracts Entity Framework Core data access, ensuring transactional integrity across multiple operations.
 
 ## ✨ Advanced Engineering Features
 
 ### 🔐 Security & Authentication
-*   **Multi-Role RBAC:** Distinct permission matrices for `SuperAdmin`, `Admin`, `Staff` (IT, HR, Finance, etc.), `Vendor`, and `Customer`.
+*   **Multi-Role RBAC:** Distinct permission matrices for `SuperAdmin`, `Admin`, `Vendor`, and `Customer`.
 *   **Secure Token Management:** JWT Bearer tokens for access, paired with **HTTP-Only, Secure, Same-Site cookies** for Refresh Tokens to mitigate XSS and CSRF attacks.
 *   **Global Exception Handling:** Utilizes .NET `IExceptionHandler` to intercept errors globally, logging them with Serilog and returning standardized `ProblemDetails` with generated `TraceId`s to the client.
 *   **API Rate Limiting:** Partitioned IP Rate Limiter to prevent brute-force attacks and abuse.
@@ -30,14 +29,14 @@ OmniMart is a highly scalable, multi-tenant e-commerce backend built with the la
 *   **Stripe Webhooks:** Secure integration with Stripe Checkout. Webhooks validate digital signatures to asynchronously confirm payments, distribute vendor revenues, and deduct committed stock.
 ### 🚀 Performance, Caching & Resilience
 *   **Distributed Caching (Redis):** Implemented heavily via a custom MediatR `CachingBehavior` pipeline to cache frequently accessed read-queries (e.g., categories, product searches) and manage OTP lifecycles.
-*   **Optimistic Concurrency:** `RowVersion` implementation on critical entities (Orders, Products, Wallets, Categories) prevents race conditions and data corruption during high-traffic concurrent modifications.
+*   **Optimistic Concurrency:** `RowVersion` implementation on critical entities (Orders, Products, Vendors, Categories) prevents race conditions and data corruption during high-traffic concurrent modifications.
 *   **Background Jobs (Hangfire):** Asynchronous task processing for sending emails, SMS, and recurring maintenance tasks (e.g., `AbandonedCartCleanupJob` which clears expired payment sessions and releases reserved stock).
 *   **Resilience (Polly):** Exponential backoff and retry policies configured for external HTTP clients to handle transient network failures gracefully.
 
 ### 🛍️ Catalog, Customers & Vendor Management
 *   **Dynamic Product Catalog:** Supports products with hierarchical categories, category-specific required attributes, dynamic variants (SKUs), and stock quantity tracking.
 *   **Cloud Media Storage:** Direct integration with **Cloudinary** for uploading, resizing, and managing product images.
-*   **Vendor Ecosystem:** Comprehensive vendor onboarding, commercial register validation workflows, automated commission rate tracking, and dynamic wallet balances.
+*   **Vendor Ecosystem:** Comprehensive vendor onboarding, commercial register validation workflows, automated commission rate tracking, and vendor balance tracking.
 *   **Customer Profiles:** Management of multiple shipping addresses and a built-in Loyalty Points system (Earn/Redeem).
 
 ## 🛠️ Tech Stack & Libraries
