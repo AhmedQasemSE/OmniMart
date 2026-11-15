@@ -1,9 +1,9 @@
 # 🧪 OmniMart - Testing Strategy & Documentation
 
 ![xUnit](https://img.shields.io/badge/xUnit-2.9.3-512BD4?style=for-the-badge&logo=dotnet)
-![Moq](https://img.shields.io/badge/Moq-4.20-blue?style=for-the-badge)
-![FluentAssertions](https://img.shields.io/badge/FluentAssertions-8.10-00A551?style=for-the-badge)
-![Coverage](https://img.shields.io/badge/Test_Cases-1,000%2B_Passing-success?style=for-the-badge)
+![Moq](https://img.shields.io/badge/Moq-4.21.0-blue?style=for-the-badge)
+![FluentAssertions](https://img.shields.io/badge/FluentAssertions-8.11.0-00A551?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/Unit_Tests-1,000%2B_Cases-success?style=for-the-badge)
 
 The OmniMart platform maintains enterprise-grade reliability and high code quality through a rigorous, well-architected test suite. The project contains over **1,000 automated test cases** that isolate and verify core layers of the Clean Architecture, ensuring business invariants are strictly enforced and regressions are prevented.
 
@@ -23,8 +23,8 @@ To maintain the **DRY (Don't Repeat Yourself)** principle and keep test files cl
 
 ### 2. Complete Dependency Isolation
 *   **Application Layer:** Handlers are tested by mocking the `IUnitOfWork`, `IAppDbContext`, and `ICurrentUserService`.
-*   **External Services:** Services like Stripe and Email Dispatchers are mocked to ensure tests run fast and offline.
-
+*   **External Dependencies:** External payment abstractions (e.g., `IPaymentService`) are mocked to ensure tests run fast and offline.
+  
 ## 🎯 Test Coverage Breakdown
 
 ### 1. Domain Layer Tests (Business Invariants)
