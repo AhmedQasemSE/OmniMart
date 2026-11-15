@@ -9,7 +9,7 @@
 OmniMart is a highly scalable, multi-vendor e-commerce backend built with the latest **.NET 10** and **C#**. Designed with enterprise-grade standards, it strictly follows **Clean Architecture** and implements **Domain-Driven Design (DDD)**, **CQRS**, and **Event-Driven Architecture**. The system seamlessly handles complex e-commerce workflows, including multi-role authorization, dynamic vendor management, robust order state machines, and secure payment processing.
 
 ## 🏗️ Architecture & Core Patterns
-*   **Clean Architecture:** Strict separation of concerns across Domain, Application, Infrastructure, and API layers to ensure maintainability and testability.
+*   **Clean Architecture:** Strict separation of concerns across Domain, Application, Infrastructure, and Web API (`OmniMart`) layers to ensure maintainability and testability.
 *   **Domain-Driven Design (DDD):** Rich domain models with strict encapsulation, value objects (e.g., `Address`), domain events, and invariant enforcement.
 *   **CQRS Pattern:** Segregation of Commands and Queries using **MediatR**. Queries are heavily optimized using `.AsNoTracking()` for high-speed read operations.
 *   **Event-Driven Architecture:** In-process domain events (via custom `SaveChangesInterceptor` and MediatR `INotificationHandler`) decouple core logic from side effects like email and SMS notifications.
@@ -19,13 +19,13 @@ OmniMart is a highly scalable, multi-vendor e-commerce backend built with the la
 
 ### 🔐 Security & Authentication
 *   **Multi-Role RBAC:** Distinct permission matrices for `SuperAdmin`, `Admin`, `Vendor`, and `Customer`.
-*   **Secure Token Management:** JWT Bearer tokens for access, paired with **HTTP-Only, Secure, Same-Site cookies** for Refresh Tokens to mitigate XSS and CSRF attacks.
+*   **Secure Token Management:** JWT Bearer tokens for access, paired with **HTTP-Only, Secure, Same-Site cookies** for Refresh Tokens to help mitigate XSS and CSRF risks.
 *   **Global Exception Handling:** Utilizes .NET `IExceptionHandler` to intercept errors globally, logging them with Serilog and returning standardized `ProblemDetails` with generated `TraceId`s to the client.
 *   **API Rate Limiting:** Partitioned IP Rate Limiter to prevent brute-force attacks and abuse.
 
 ### 💳 Order Processing & Payments
 *   **State Machine Orders:** Strict state transitions (Pending ➔ Processing ➔ Shipped ➔ Delivered) with robust cancellation, refund policies, and automatic stock restoration.
-*   **Idempotency:** Custom API idempotency filters (`[Idempotent]`) backed by Redis prevent duplicate processing and double-charging during critical endpoints like Checkout.
+*   **Idempotency:** Custom API idempotency filters (`[Idempotent]`) backed by Redis help guard against duplicate processing during critical endpoints like Checkout.
 *   **Stripe Webhooks:** Secure integration with Stripe Checkout. Webhooks validate digital signatures to asynchronously confirm payments, distribute vendor revenues, and deduct committed stock.
 ### 🚀 Performance, Caching & Resilience
 *   **Distributed Caching (Redis):** Implemented heavily via a custom MediatR `CachingBehavior` pipeline to cache frequently accessed read-queries (e.g., categories, product searches) and manage OTP lifecycles.
@@ -57,7 +57,7 @@ OmniMart is a highly scalable, multi-vendor e-commerce backend built with the la
 OmniMart/
  ├── OmniMart.Domain/           # Entities, Enums, Value Objects, and Domain Events
  ├── OmniMart.Application/      # CQRS Handlers, DTOs, Interfaces, Validation/Caching Behaviors
- ├── OmniMart.Infrastructure/   # EF Core DbContext, Repositories, Stripe, Redis, MailKit, Cloudinary
+ ├── OmniMart.Infrastructure/   # EF Core DbContext, Repositories, Stripe, MailKit, Cloudinary
  ├── OmniMart/                  # Controllers, Middlewares, Webhooks, Idempotency Filters
  └── OmniMart.Tests/            # Unit Tests & Mock Data
 ```
